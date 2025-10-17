@@ -10,23 +10,20 @@ Calculation Rules
 For each row in [TABLE A], apply the following formulas:
 
 pod = standardBreakup
-overr = derived_effortssavings * (standardBreakup / 100)
+overr = (derived_effortssavings * standardBreakup) / 100
 If derived_effortssavings is blank or 0, set overr = 0
 poa = pod - overr
 If overr = 0, then poa = standardBreakup
-podph = (pod / 100) * initialEffort
-oes = (overr / 100) * initialEffort
-poaph = podph - oes
-derived_yeara = yeara
-derived_yearb = yearb
-derived_yearc = yearc
-derived_yeard = yeard
-derived_yeare = yeare
+yeara_adoption = yeara
+yearb_adoption = yearb
+yearc_adoption = yearc
+yeard_adoption = yeard
+yeare_adoption = yeare
 
 Output Table Format
 Generate an output table with the following columns in this exact order:
 
-phase | stlcName | standardBreakup | pod | poa | overr | podph | poaph | poa | oes | derived_solution_name | derived_yeara | derived_yearb | derived_yearc | derived_yeard | derived_yeare
+phase | stlcName | standardBreakup | pod | poa | overr | derived_solution_name | yeara_adoption | yearb_adoption | yearc_adoption | yeard_adoption | yeare_adoption
 Output Format
 Convert the output table into a JSON array of objects. Each object should follow this structure:
 
@@ -36,16 +33,13 @@ Convert the output table into a JSON array of objects. Each object should follow
   "standardBreakup": number,
   "pod": number,
   "poa": number,
-  "overr": number,
-  "podph": number,
-  "poaph": number,
-  "oes": number,
+  "overr": number,  
   "derived_solution_name": "string",
-  "derived_yeara": yeara | null,
-  "derived_yearb": yearb | null,
-  "derived_yearc": yearc | null,
-  "derived_yeard": yeard | null,
-  "derived_yeare": yeare | null
+  "yeara_adoption": yeara | null,
+  "yearb_adoption": yearb | null,
+  "yearc_adoption": yearc | null,
+  "yeard_adoption": yeard | null,
+  "yeare_adoption": yeare | null
 }}
 
 

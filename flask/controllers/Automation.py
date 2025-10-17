@@ -270,7 +270,12 @@ def aumation_data():
             catQuery = Effortsdistribution.query.filter_by(added_by=logged_user_email,stlc_name=i['stlcName']).first() 
             
             # cogSolFetch = Cognitivesolutions.query.filter_by(sol_id=catQuery.phase, added_by = logged_user_email).first()
-            # print(i['derived_yeara'])
+            # print(i['yeara_adoption'])
+            podphval = (float(i['pod'])*float(initialEffort))/100
+            oesphval = (float(i['overr'])*float(initialEffort))/100
+            poaphval=podphval-oesphval
+            print(oesphval)  
+            # exit
             # Insert into calculation table 
             cal_inst = Calculation(
                 stlc_name=i['stlcName'], 
@@ -278,11 +283,11 @@ def aumation_data():
                 # phase_id=1, 
                 sais=i['derived_solution_name'],
                 pod=i['pod'], 
-                poa=i['poa'], 
+                poa=i['pod']-i['overr'], 
                 overr=i['overr'], 
-                podph=i['podph'], 
-                poaph=i['poaph'], 
-                oes=i['oes'], 
+                podph=podphval, 
+                poaph=poaphval, 
+                oes=oesphval,
                 status=1,
                 category_name="Greenfield Digital Transformation",
                 ini_duration=int(duration),
@@ -310,11 +315,11 @@ def aumation_data():
             # yeard_effi=(i['overr']*cogSolFetch.yeard)/100
             # yeare_effi=(i['overr']*cogSolFetch.yeare)/100
             # print(i)
-            yearaVal = (i['overr']*i['derived_yeara'])/100 if i.get('derived_yeara') else 0            
-            yearbVal = (i['overr']*i['derived_yearb']) / 100 if i.get('derived_yearb') else 0 
-            yearcVal = (i['overr']*i['derived_yearc']) / 100 if i.get('derived_yearc') else 0 
-            yeardVal = (i['overr']*i['derived_yeard']) / 100 if i.get('derived_yeard') else 0 
-            yeareVal = (i['overr']*i['derived_yeare']) / 100 if i.get('derived_yeare') else 0 
+            yearaVal = (i['overr']*i['yeara_adoption'])/100 if i.get('yeara_adoption') else 0            
+            yearbVal = (i['overr']*i['yearb_adoption']) / 100 if i.get('yearb_adoption') else 0 
+            yearcVal = (i['overr']*i['yearc_adoption']) / 100 if i.get('yearc_adoption') else 0 
+            yeardVal = (i['overr']*i['yeard_adoption']) / 100 if i.get('yeard_adoption') else 0 
+            yeareVal = (i['overr']*i['yeare_adoption']) / 100 if i.get('yeare_adoption') else 0 
             # print("================")
             # print(yearaVal)
             # print(yearbVal)
@@ -326,51 +331,51 @@ def aumation_data():
                 cal_id=last_inserted_id,  
                 stlc_name=i['stlcName'],                     
                 catelog_name=i['derived_solution_name'],   
-                # yeara = (i['derived_yeara'] * int(i['overr'])) / 100 if i.get('derived_yeara') else 0,             
+                # yeara = (i['yeara_adoption'] * int(i['overr'])) / 100 if i.get('yeara_adoption') else 0,             
                 yeara = yearaVal,             
                 yearb = yearbVal,                     
                 yearc = yearcVal,                         
                 yeard = yeardVal,          
                 yeare = yeareVal,          
-                # yeare=i['derived_yeare'],                     
+                # yeare=i['yeare_adoption'],                     
                 added_by=logged_user_email,                     
             )
             db.session.add(cal_yr_inst)
             db.session.commit()
 
-            derived_yeara=0
-            derived_yearb=0
-            derived_yearc=0
-            derived_yeard=0
-            derived_yeare=0
+            yeara_adoption=0
+            yearb_adoption=0
+            yearc_adoption=0
+            yeard_adoption=0
+            yeare_adoption=0
             cogSolQuery = Cognitivesolutions.query.filter_by(stlc_name=i['stlcName'], added_by = logged_user_email).first()
             if cogSolQuery is not None:
                 if(duration ==1):
-                    derived_yeara=i.get('derived_yeara')
+                    yeara_adoption=i.get('yeara_adoption')
                 if(duration ==2):
-                    derived_yeara=i.get('derived_yeara')
-                    derived_yearb=i.get('derived_yearb')
+                    yeara_adoption=i.get('yeara_adoption')
+                    yearb_adoption=i.get('yearb_adoption')
                 if(duration ==3):
-                    derived_yeara=i.get('derived_yeara')
-                    derived_yearb=i.get('derived_yearb')
-                    derived_yearc=i.get('derived_yearc')
+                    yeara_adoption=i.get('yeara_adoption')
+                    yearb_adoption=i.get('yearb_adoption')
+                    yearc_adoption=i.get('yearc_adoption')
                 if(duration ==4):
-                    derived_yeara=i.get('derived_yeara')
-                    derived_yearb=i.get('derived_yearb')
-                    derived_yearc=i.get('derived_yearc')
-                    derived_yeard=i.get('derived_yeard')
+                    yeara_adoption=i.get('yeara_adoption')
+                    yearb_adoption=i.get('yearb_adoption')
+                    yearc_adoption=i.get('yearc_adoption')
+                    yeard_adoption=i.get('yeard_adoption')
                 if(duration ==5):
-                    derived_yeara=i.get('derived_yeara')
-                    derived_yearb=i.get('derived_yearb')
-                    derived_yearc=i.get('derived_yearc')
-                    derived_yeard=i.get('derived_yeard')
-                    derived_yeare=i.get('derived_yeare') 
+                    yeara_adoption=i.get('yeara_adoption')
+                    yearb_adoption=i.get('yearb_adoption')
+                    yearc_adoption=i.get('yearc_adoption')
+                    yeard_adoption=i.get('yeard_adoption')
+                    yeare_adoption=i.get('yeare_adoption') 
                       
-                cogSolQuery.yeara_efficiency = derived_yeara
-                cogSolQuery.yearb_efficiency = derived_yearb
-                cogSolQuery.yearc_efficiency = derived_yearc
-                cogSolQuery.yeard_efficiency = derived_yeard
-                cogSolQuery.yeare_efficiency = derived_yeare
+                cogSolQuery.yeara_efficiency = yeara_adoption
+                cogSolQuery.yearb_efficiency = yearb_adoption
+                cogSolQuery.yearc_efficiency = yearc_adoption
+                cogSolQuery.yeard_efficiency = yeard_adoption
+                cogSolQuery.yeare_efficiency = yeare_adoption
                 db.session.commit()           
         
         return {

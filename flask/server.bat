@@ -9,6 +9,7 @@ set PORT=285
 REM Activate virtual environment
 call .\syncup_call\Scripts\activate
 
-flask run -h %HOST% -p %PORT%
+REM flask run -h %HOST% -p %PORT%
+flask run
 
 pause
