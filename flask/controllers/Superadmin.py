@@ -164,6 +164,7 @@ def superadmin_list_users():
             role=u.user_role,
             status=u.email_confirmed,
             createdAt=str(u.created_at),
+            profileImage=u.profile_image or '',
         )
         for u in users
     ]), 200
@@ -185,14 +186,53 @@ def superadmin_add_user():
     if User.query.filter_by(email=email).first():
         return jsonify({"success": False, "message": "Email already exists."}), 400
 
+    profile_image = data.get('profileImage', None) or None
     password = encrypt_password(raw_password)
     new_user = User(
         email=email, password=password, firstname=firstname, lastname=lastname,
         user_role=role, email_confirmed=0, created_at=currentTime,
+        profile_image=profile_image,
     )
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"success": True, "message": "User added successfully."}), 201
+
+
+@app.route('/superadmin/user/update', methods=['POST'])
+@jwt_required()
+def superadmin_update_user():
+    if not _require_superadmin():
+        return jsonify({"success": False, "message": "Unauthorized."}), 403
+    d = request.get_json()
+    user = User.query.filter_by(email=d['email']).first()
+    if not user:
+        return jsonify({"success": False, "message": "User not found."}), 404
+    user.firstname = d.get('firstname', user.firstname)
+    user.lastname = d.get('lastname', user.lastname)
+    user.user_role = d.get('role', user.user_role)
+    if d.get('profileImage') is not None:
+        user.profile_image = d['profileImage'] or None
+    raw_password = d.get('password', '')
+    if raw_password:
+        user.password = encrypt_password(raw_password)
+    db.session.commit()
+    return jsonify({"success": True, "message": "User updated successfully."}), 200
+
+
+@app.route('/superadmin/user/delete', methods=['POST'])
+@jwt_required()
+def superadmin_delete_user():
+    if not _require_superadmin():
+        return jsonify({"success": False, "message": "Unauthorized."}), 403
+    d = request.get_json()
+    user = User.query.filter_by(email=d['email']).first()
+    if not user:
+        return jsonify({"success": False, "message": "User not found."}), 404
+    Effortsdistribution.query.filter_by(added_by=user.email).delete()
+    Applicablecognitivesolutions.query.filter_by(added_by=user.email).delete()
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({"success": True, "message": "User deleted successfully."}), 200
 
 
 @app.route('/superadmin/user/activate', methods=['POST'])

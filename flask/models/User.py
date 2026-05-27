@@ -1,4 +1,5 @@
 from app import db, app
+from sqlalchemy import text
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -10,6 +11,7 @@ class User(db.Model):
     user_role=db.Column(db.String(100), nullable=False)
     email_confirmed=db.Column(db.Integer, default=0, nullable=False)
     created_at=db.Column(db.String(100), nullable=False)
+    profile_image=db.Column(db.Text, nullable=True)
 
 
 class Usertoken(db.Model):
@@ -22,3 +24,9 @@ class Usertoken(db.Model):
 
 with app.app_context():
     db.create_all()
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(text('ALTER TABLE users ADD COLUMN profile_image TEXT'))
+            conn.commit()
+    except Exception:
+        pass
