@@ -48,8 +48,7 @@ const Login = (props) => {
         }
       })
         .catch(error => {
-          alert(error.data.message);
-
+          alert(error?.response?.data?.message || error?.message || 'Login failed. Please check your connection.');
         });
     }
 

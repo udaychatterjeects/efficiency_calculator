@@ -117,7 +117,7 @@ const AddStlcActivities = (props) => {
     })
       .then((response) => {
         // console.log("AAA:",response.data)
-        setStlcPhases(response.data);
+        setStlcPhases(Array.isArray(response.data) ? response.data : []);
       })
       .catch((err) => {
         alert(err.response?.data?.message || "Error fetching STLC phases.");

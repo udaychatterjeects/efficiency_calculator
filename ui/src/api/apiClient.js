@@ -35,8 +35,7 @@ export async function apiQuery(config) {
     });
     return apiResponse;
   } catch (err) {
-    const rejectedPromise = Promise.reject(err.response);
-    return rejectedPromise;
+    return Promise.reject(err);
   }
 }
 
@@ -204,7 +203,7 @@ export const apiRoute = {
       auth: true,
     },
     getEfficiencyGainNew: {
-      endpoint: "dashboard/efficiency-gain-new",
+      endpoint: "efficiency-gain-new",
       method: "POST",
       auth: true,
     },
