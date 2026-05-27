@@ -31,9 +31,10 @@ const Sidebar = (props) => {
                 arrow
               >
                 <img
-                  src="/assets/img/dummy-profile-pic.jpg"
+                  src={sessionStorage.getItem("USER_PROFILE_IMAGE") || "/assets/img/dummy-profile-pic.jpg"}
                   alt="..."
                   className="avatar-img rounded-circle"
+                  style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                 />
               </Tooltip>
             </div>
@@ -56,42 +57,35 @@ const Sidebar = (props) => {
           <div className="sidebar-content">
 
             <ul className="nav nav-secondary">
-              {(location.pathname.slice(1) == "input") ? (
-                <li className="nav-item active">
-                  <a href="/input">
-                    <i className="fas fa-desktop"></i>
-                    <p>Input</p>
+              {sessionStorage.getItem('USER_ROLE') === 'superadmin' ? (
+                <li className={location.pathname.slice(1) === 'superadmin' ? 'nav-item active' : 'nav-item'}>
+                  <a href="/superadmin">
+                    <i className="fas fa-shield-alt"></i>
+                    <p>Super Admin</p>
                   </a>
                 </li>
               ) : (
-                <li className="nav-item">
-                  <a href="/input">
-                    <i className="fas fa-desktop"></i>
-                    <p>Input</p>
-                  </a>
-                </li>
+                <>
+                  {(location.pathname.slice(1) == "input") ? (
+                    <li className="nav-item active">
+                      <a href="/input"><i className="fas fa-desktop"></i><p>Input</p></a>
+                    </li>
+                  ) : (
+                    <li className="nav-item">
+                      <a href="/input"><i className="fas fa-desktop"></i><p>Input</p></a>
+                    </li>
+                  )}
+                  {(location.pathname.slice(1) == "configuration") ? (
+                    <li className="nav-item active">
+                      <a href="/configuration"><i className="fas fa-layer-group"></i><p>Configuration</p></a>
+                    </li>
+                  ) : (
+                    <li className="nav-item">
+                      <a href="/configuration"><i className="fas fa-layer-group"></i><p>Configuration</p></a>
+                    </li>
+                  )}
+                </>
               )}
-              {(location.pathname.slice(1) == "configuration") ? (
-                <li className="nav-item active">
-                  <a href="/configuration">
-                    <i className="fas fa-layer-group"></i>
-                    <p>Configuration</p>
-                  </a>
-                </li>
-              ) : (
-                <li className="nav-item">
-                  <a href="/configuration">
-                    <i className="fas fa-layer-group"></i>
-                    <p>Configuration</p>
-                  </a>
-                </li>
-              )}
-              {/* <li >
-                  <a href="/configuration">
-                    <i className="fas fa-layer-group"></i>
-                    <p>Configuration</p>
-                  </a>
-                </li> */}
             </ul>
 
           </div>

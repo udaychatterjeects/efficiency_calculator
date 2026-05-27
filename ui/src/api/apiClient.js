@@ -680,5 +680,25 @@ export const apiRoute = {
   //     method: 'GET',
   //     auth: true
   //   }
-  // }
+  // },
+  SuperAdmin: {
+    Seed:             { endpoint: 'superadmin/seed',             method: 'POST', auth: false },
+    ListUsers:        { endpoint: 'superadmin/users',            method: 'GET',  auth: true },
+    AddUser:          { endpoint: 'superadmin/user/add',         method: 'POST', auth: true },
+    UpdateUser:       { endpoint: 'superadmin/user/update',      method: 'POST', auth: true },
+    DeleteUser:       { endpoint: 'superadmin/user/delete',      method: 'POST', auth: true },
+    ActivateUser:     { endpoint: 'superadmin/user/activate',    method: 'POST', auth: true },
+    ListActivities:   { endpoint: 'superadmin/activities',       method: 'GET',  auth: true },
+    AddActivity:      { endpoint: 'superadmin/activity/add',     method: 'POST', auth: true },
+    UpdateActivity:   { endpoint: 'superadmin/activity/update',  method: 'POST', auth: true },
+    DeleteActivity:   { endpoint: 'superadmin/activity/delete',  method: 'POST', auth: true },
+    ListSolutions:    { endpoint: 'superadmin/solutions',        method: 'GET',  auth: true },
+    AddSolution:      { endpoint: 'superadmin/solution/add',     method: 'POST', auth: true },
+    UpdateSolution:   { endpoint: 'superadmin/solution/update',  method: 'POST', auth: true },
+    DeleteSolution:   { endpoint: 'superadmin/solution/delete',  method: 'POST', auth: true },
+    ListCategories:   { endpoint: 'superadmin/categories',       method: 'GET',  auth: true },
+    AddCategory:      { endpoint: 'superadmin/category/add',     method: 'POST', auth: true },
+    UpdateCategory:   { endpoint: 'superadmin/category/update',  method: 'POST', auth: true },
+    DeleteCategory:   { endpoint: 'superadmin/category/delete',  method: 'POST', auth: true },
+  },
 };

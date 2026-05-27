@@ -230,7 +230,7 @@ const [selectedStlc, setSelectedStlc] = useState("");
       if (response.status === 200) {
         // console.log("HPL:", response.data[0].stlc_name);
         // setStlc(response.data);
-        setStlcList(response.data); 
+        setStlcList(Array.isArray(response.data) ? response.data : []);
       } else {
         setError("Failed to fetch categories.");
       }

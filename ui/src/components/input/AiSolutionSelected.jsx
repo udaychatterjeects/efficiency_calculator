@@ -236,7 +236,6 @@ const handleSetInitialEffort = (event) => {
   };
 
   useEffect(() => {
-
     apiQuery({
       ...apiRoute.Configuration.GetCategory
     }).then((response) => {
@@ -244,7 +243,7 @@ const handleSetInitialEffort = (event) => {
         return { squadId: usersquad.squadId, catName: usersquad.catName };
       });
       setSquadValues(newSquadValues);
-    });
+    }).catch(() => {});
   }, []);
   useEffect(() => {
 

@@ -7,16 +7,16 @@ const AddStlcEfforts = () => {
   const [effortBreakdown, setEffortBreakdown] = useState('');
   const [loading, setLoading] = useState(false);
   const [stlcPhases, setStlcPhases] = useState([]);
+  const [projectCategories, setProjectCategories] = useState([]);
 
-  const projectCategories = [
-    'Break-fix, Maintenance, Enhancements',
-    'Greenfield Digital Transformation',
-    'Platform Upgrade and Modernization',
-  ];
-
-  // Fetch existing STLC phases
   useEffect(() => {
-    // fetchStlcPhases();
+    apiQuery(apiRoute.Configuration.GetCategory)
+      .then(res => {
+        const cats = Array.isArray(res.data) ? res.data.map(c => c.catName) : [];
+        setProjectCategories(cats);
+        if (cats.length > 0) setProjectCategory(cats[0]);
+      })
+      .catch(() => {});
   }, []);
 
   const fetchStlcPhases = () => {

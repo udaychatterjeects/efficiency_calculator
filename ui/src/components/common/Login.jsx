@@ -41,7 +41,8 @@ const Login = (props) => {
           sessionStorage.setItem("USER_EMAIL", response.data.email)
           sessionStorage.setItem("USER_ROLE", response.data.role)
           sessionStorage.setItem("USER_ACCESS_TOKEN", response.data.token)
-          navigate('/input');
+          sessionStorage.setItem("USER_PROFILE_IMAGE", response.data.profileImage || "")
+          navigate(response.data.role === 'superadmin' ? '/superadmin' : '/input');
         }
         else {
           alert(response.data.message)

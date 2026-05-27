@@ -25,6 +25,7 @@ const StlcEfforts = () => {
   const [squadValues, setSquadValues] = useState([]);
   const [selectedApplication, setSelectedApplication] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(true);
   const [showAddModal, setShowAddModal] = useState(0);
@@ -43,7 +44,14 @@ const StlcEfforts = () => {
   const ids = open ? "simple-popover" : undefined;
 
   useEffect(() => {
-    handleProjectCategory("Greenfield Digital Transformation");
+    apiQuery(apiRoute.Configuration.GetCategory)
+      .then(res => {
+        const cats = Array.isArray(res.data) ? res.data.map(c => c.catName) : [];
+        setCategories(cats);
+        const first = cats[0] || 'Greenfield Digital Transformation';
+        handleProjectCategory(first);
+      })
+      .catch(() => handleProjectCategory('Greenfield Digital Transformation'));
   }, [refreshTrigger]);
 
   function handleProjectCategory(value) {
@@ -56,7 +64,7 @@ const StlcEfforts = () => {
       },
     }).then((response) => {
       setBaselineListValues(response.data.data);
-    });
+    }).catch(() => {});
   }
 
   function updateValue() {
@@ -195,9 +203,21 @@ const StlcEfforts = () => {
         <div className="col-md-12">
           <div className="card card-round">
             <div className="card-header">
-              <div className="card-head-row">
+              <div className="card-head-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div className="card-title">
                   QA Effort Breakup Across STLC Activities
+                </div>
+                <div>
+                  <select
+                    className="form-control form-control-sm"
+                    style={{ minWidth: 260 }}
+                    value={selectedCategory}
+                    onChange={e => handleProjectCategory(e.target.value)}
+                  >
+                    {categories.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>

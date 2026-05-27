@@ -39,14 +39,7 @@ const Input = () => {
         setDisSec(true)
         setValue(0)
       }
-      // else{
-      //   setDisFir("false")
-      //   setValue(0)
-      // }
-      // setRefreshTrigger()
-      // setCalExists(response.data.data)
-      // console.log("disTab:",disTab)
-    });
+    }).catch(() => {});
   }, []);
   return (
     <div className="page-inner">

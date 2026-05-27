@@ -4,6 +4,7 @@ import Header from "../Header";
 import Input from '../input/Input';
 // import Processing from "../pages/Processing";
 import Configuration from '../configuration/Configuration';
+import SuperAdminDashboard from '../superadmin/SuperAdminDashboard';
 import { AuthProvider } from "../../Context/AuthContext";
 // import ReactDOM from "react-dom/client";
 import {
@@ -31,6 +32,7 @@ const OtherComponents = () => {
               <Route path="/" element={<Input />} />
               <Route path="/input" element={<Input />} />
               <Route path="/configuration" element={<Configuration />} />
+              <Route path="/superadmin" element={<SuperAdminDashboard />} />
             </Routes>
           </div>
         </div>
