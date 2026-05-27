@@ -48,6 +48,52 @@ def list_phases():
     except:
         return jsonify({"success": False, "message": "Error fetching phases."}), 200
 
+#List of all STLC Activities (distinct stlc_name for logged-in user)
+@app.route("/activity/list", methods=["GET"])
+@jwt_required()
+def list_activities():
+    try:
+        tokenDetails = get_jwt_identity()
+        logged_user_email = tokenDetails['user']
+        activities = Effortsdistribution.query.filter_by(
+            added_by=logged_user_email, status=1
+        ).order_by(asc(Effortsdistribution.stlc_name)).all()
+        seen = set()
+        activityList = []
+        for a in activities:
+            if a.stlc_name not in seen:
+                seen.add(a.stlc_name)
+                activityList.append({'stlc_name': a.stlc_name})
+        return jsonify(activityList), 200
+    except:
+        return jsonify({"success": False, "message": "Error fetching activities."}), 200
+
+#Add a new STLC Activity
+@app.route("/activity/add", methods=["POST"])
+@jwt_required()
+def add_activity():
+    try:
+        tokenDetails = get_jwt_identity()
+        logged_user_email = tokenDetails['user']
+        data = request.get_json()
+        stlc_phase = data['stlcPhase']
+        stlc_name = data['stlcName']
+        standard_breakup = data['standardBreakup']
+        new_activity = Effortsdistribution(
+            phase=stlc_phase,
+            stlc_name=stlc_name,
+            cat_name='Greenfield Digital Transformation',
+            standard_breakup=standard_breakup,
+            override_breakup=standard_breakup,
+            status=1,
+            added_by=logged_user_email,
+        )
+        db.session.add(new_activity)
+        db.session.commit()
+        return jsonify({"success": True, "code": 200, "message": "Activity added successfully."}), 200
+    except:
+        return jsonify({"success": False, "code": 500, "message": "System encountered an unexpected problem."}), 200
+
 #List of all Project Category
 @app.route("/stlcbycategory",methods=["POST"])
 @jwt_required()
