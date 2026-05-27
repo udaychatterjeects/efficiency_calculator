@@ -10,15 +10,6 @@ from sqlalchemy import func
 import math
 from controllers.Defaultdata import insert_default_solution
 
-from sqlalchemy import create_engine, func
-from sqlalchemy.orm import sessionmaker
-from flask import session
-
-from sqlalchemy import func
-
-# from your_model_file import Order  # Replace with your actual model
-
-
 
 #List of all Project Category
 @app.route("/category/list",methods=["GET"])
@@ -42,6 +33,20 @@ def list_category():
             "code":500,
             "message":"System encountered an unexpected problem and is being tracked.",
         }),200
+
+#List of all STLC Phases
+@app.route("/phase/list", methods=["GET"])
+@jwt_required()
+def list_phases():
+    try:
+        phases = Phase.query.filter_by(status=1).order_by(asc(Phase.phase_id)).all()
+        phaseList = [
+            dict(phase_id=p.phase_id, phase_name=p.phase_name)
+            for p in phases
+        ]
+        return jsonify(phaseList), 200
+    except:
+        return jsonify({"success": False, "message": "Error fetching phases."}), 200
 
 #List of all Project Category
 @app.route("/stlcbycategory",methods=["POST"])
@@ -68,7 +73,6 @@ def list_category_by_stlc():
             'phase': phaseQuery.phase_name,
             'phase_id': phaseQuery.phase_id,
             'stlcName': cat.stlc_name,
-            'default': cat.default,
             'standardBreakup': cat.standard_breakup,
             'overrideBreakup': cat.override_breakup,
             'stlstatuscName': cat.status,
@@ -87,44 +91,43 @@ def list_category_by_stlc():
 @app.route('/effortsdistribution/add', methods=['POST'])
 
 def create_ed_application():    
-        data = request.get_json()
-    # try:
+    data = request.get_json()
+    try:
         eDisId = data['eDisId']
         overrideValue = data['overrideValue']
-        # standardValue = data['standardValue']
-        standardValue = overrideValue
+        standardValue = data['standardValue']
         selectedCategory = data['selectedCategory']
 
-        # sum=0
-        # for inde,x in enumerate(overrideValue):        
-        #     # Check if provided value is numeric or not
-        #     if not x.isnumeric():
-        #         return {
-        #             "success":False,
-        #             "code":400,
-        #             'message':"You have to provide only numeric value."
-        #         },400
-        #     # value will be within 0,100  range
-        #     if (int(x) >100 or int(x) <0):
-        #         return {
-        #             "success":False,
-        #             "code":400,
-        #             'message':"Provide value between 0 to 100."
-        #         },400
-        #     # Check if sum of value is 100
-        #     finalValue = standardValue[inde]
-        #     if(standardValue[inde] != x):
-        #         finalValue = x
-        #     else:
-        #         finalValue = standardValue[inde]
-        #     sum = sum+int(finalValue)
+        sum=0
+        for inde,x in enumerate(overrideValue):        
+            # Check if provided value is numeric or not
+            if not x.isnumeric():
+                return {
+                    "success":False,
+                    "code":400,
+                    'message':"You have to provide only numeric value."
+                },400
+            # value will be within 0,100  range
+            if (int(x) >100 or int(x) <0):
+                return {
+                    "success":False,
+                    "code":400,
+                    'message':"Provide value between 0 to 100."
+                },400
+            # Check if sum of value is 100
+            finalValue = standardValue[inde]
+            if(standardValue[inde] != x):
+                finalValue = x
+            else:
+                finalValue = standardValue[inde]
+            sum = sum+int(finalValue)
        
-        # if (sum !=100):
-        #     return {
-        #         "success":False,
-        #         "code":400,
-        #         'message':"Total value should be 100."
-        #     },400
+        if (sum !=100):
+            return {
+                "success":False,
+                "code":400,
+                'message':"Total value should be 100."
+            },400
         for cnt,val in enumerate(overrideValue):
             effortsDistributionInfo = Effortsdistribution.query.filter_by(e_dis_id=eDisId[cnt]).first()
             effortsDistributionInfo.override_breakup = val
@@ -134,12 +137,12 @@ def create_ed_application():
             "code":200,
             'message':"Data updated successfully."
         },200 
-    # except:
-    #     return jsonify({
-    #         "success":False,
-    #         "code":500,
-    #         "message":"System encountered an unexpected problem and is being tracked.",
-    #     }),200
+    except:
+        return jsonify({
+            "success":False,
+            "code":500,
+            "message":"System encountered an unexpected problem and is being tracked.",
+        }),200
     
 # #Function to create Squad
 @app.route('/solution/add', methods=['POST'])
@@ -155,12 +158,11 @@ def add_solution():
     license_type = data['licenseType']
     licsensing_cost = data['licsensingCost']
     frequency = data['frequency']
-    program_category ='Greenfield Digital Transformation'
+    program_category = data['programCategory']
     initial_effort = data['initialEffort']
     duration = data['duration']
     effort_savings = data['effort']
     recisedEffort = data['recisedEffort']
-    targetEfficiency = data['targetEfficiency']
     added_by = logged_user_email
 
     search_stlc = "%{}%".format(stlc_name)
@@ -184,7 +186,6 @@ def add_solution():
             effort_savings=effortVal,
             program_category=program_category,
             initial_effort=initial_effort,
-            target_efficiency=targetEfficiency,
             duration=duration,
             status=status,
             added_by=added_by
@@ -229,7 +230,6 @@ def list_solution():
             solutionType=row.solution_type,
             licsensingCost=row.licsensing_cost,
             frequency=row.frequency,
-            vector=row.vector,
             effortSavings=str(row.effort_savings)+"%",
             preferredTool=row.preferred_tool,
             short_desc=row.short_desc,
@@ -296,7 +296,6 @@ def add_mastersolution():
     solution_type = data['solutionType']
     desc = data['desc']
     adoption = data['adoption']
-    vector = data['vector']
     added_by = logged_user_email
     preferred_tool = "Y"
     status = 1  
@@ -310,7 +309,6 @@ def add_mastersolution():
             licsensing_cost   = licsensing_cost,
             frequency         = frequency,
             effort_savings    = effort_savings,
-            vector            = vector,
             preferred_tool    = preferred_tool,
             status            = status,
             short_desc            = desc,
@@ -342,7 +340,6 @@ def update_solution():
     sol_id = data['sid']
     solution_type = data['solutionType']    
     short_desc = data['desc']    
-    vector = data['vector']    
       
     # yeara = data['yeara']    
     # yearb = data['yearb']    
@@ -361,7 +358,6 @@ def update_solution():
     solutionInfo.frequency = frequency
     solutionInfo.effort_savings = effort_savings
     solutionInfo.short_desc = short_desc
-    solutionInfo.vector = vector
     # solutionInfo.adoption_yeara = yeara
     # solutionInfo.adoption_yearb = yearb
     # solutionInfo.adoption_yearc = yearc
@@ -510,20 +506,14 @@ def list_cognitive_solution():
             'duration': cat.duration,
             'program_category': cat.program_category,
             'initial_effort': cat.initial_effort,
-            'target_efficiency': cat.target_efficiency,
             'adoption_per': acatQuery.adoption_per,
             'source_data': cat.source_data,
-            'yeara': cat.yeara,
-            'yearb': cat.yearb,
-            'yearc': cat.yearc,
-            'yeard': cat.yeard,
-            'yeare': cat.yeare,
         }
         catList.append(item)
     
     return catList,200
 
- 
+
 #List of all Project Category
 @app.route("/cognitivesolution/graph",methods=["GET"])
 @jwt_required()
@@ -615,39 +605,21 @@ def get_bargraph():
 @jwt_required()
 def list_cognitive_solution_calc():  
     tokenDetails = get_jwt_identity()
-    logged_user_email = tokenDetails['user']
+    logged_user_email = tokenDetails['user'] 
+    
     catQuery = Cognitivesolutions.query.filter_by(status=1,added_by=logged_user_email).order_by(asc(Cognitivesolutions.phase_name)).all()
     catList = [] 
-    for cog in catQuery: 
-        final_saving = get_final_saving(cog.stlc_name)
-        sum_effort = get_sum_effort(cog.stlc_name)
-        yeara='0'
-        yearb='0'
-        yearc='0'
-        yeard='0'
-        yeare='0' 
-        if str(cog.yeara) > '0':
-            yeara=(((cog.effort_savings/sum_effort)*final_saving)*cog.yeara)/100
-        if str(cog.yearb) > '0':
-            yearb=(((cog.effort_savings/sum_effort)*final_saving)*cog.yearb)/100
-        if str(cog.yearc) > '0':
-            yearc=(((cog.effort_savings/sum_effort)*final_saving)*cog.yearc)/100
-        if str(cog.yeard) > '0':
-            yeard=(((cog.effort_savings/sum_effort)*final_saving)*cog.yeard)/100
-        if str(cog.yeare) > '0':
-            yeare=(((cog.effort_savings/sum_effort)*final_saving)*cog.yeare)/100
-
+    for cog in catQuery:    
         item={
             'solId': cog.sol_id,
             'stlcName': cog.stlc_name,
             'catelog': cog.catelog,
             'effortSavings':cog.effort_savings,
-            'total_saving':cog.total_saving,
-            'yeara':yeara,
-            'yearb':yearb,
-            'yearc':yearc,
-            'yeard':yeard,
-            'yeare':yeare,
+            'yeara':cog.yeara_efficiency,
+            'yearb':cog.yearb_efficiency,
+            'yearc':cog.yearc_efficiency,
+            'yeard':cog.yeard_efficiency,
+            'yeare':cog.yeare_efficiency,
         }
         catList.append(item)
         
@@ -677,6 +649,12 @@ def reset_stlc():
 def reset_solutions():  
         tokenDetails = get_jwt_identity()
         logged_user_email = tokenDetails['user']
+        # return {
+        #     "success":True,
+        #     "code":200,
+        #     "logged_user_email":logged_user_email,
+        #     'message':"Data Reset Successfully."
+        # },200 
         Applicablecognitivesolutions.query.filter_by(added_by=logged_user_email).delete()
         add_def_solutions = insert_default_solution(logged_user_email)
         return {
@@ -684,7 +662,16 @@ def reset_solutions():
             "code":200,
             'message':"Data Reset Successfully."
         },200 
-
+        # efforInfo = Effortsdistribution.query.filter_by(added_by=logged_user_email).all()
+        # for effort in efforInfo:
+        #     eUpdateInfo = Effortsdistribution.query.filter_by(e_dis_id=effort.e_dis_id).first()
+        #     eUpdateInfo.override_breakup = effort.standard_breakup
+        #     db.session.commit()
+        # return {
+        #     "success":True,
+        #     "code":200,
+        #     'message':"Data Reset Successfully."
+        # },200 
 
 @app.route('/recommendation', methods=['POST'])
 @jwt_required()
@@ -692,6 +679,7 @@ def recommendation():
         data = request.get_json()
         tokenDetails = get_jwt_identity()
         logged_user_email = tokenDetails['user']
+        # print(logged_user_email)
        
         input_description = data["inputDesc"]
         solution_details = data["solDetails"]
@@ -701,7 +689,10 @@ def recommendation():
         response = get_response(prompt)
         app.logger.info(f"GenAI response:\n{response}")
         solutionList = [solution for solution in all_solutions if solution in response]
-        
+        # return {"message": "success", "solutions": solutionList, "sCount": len(solutionList)}, 200
+        # except Exception as error:
+        #     return {"message": "error", "error": str(error)}, 500
+        # print(len(solutionList))
         if(len(solutionList) <=0):
             return jsonify({
                 "success":False,
@@ -721,7 +712,6 @@ def recommendation():
             frequency = solutionInfo.frequency
             program_category = data['programCategory']
             initial_effort = data['initialEffort']
-            target_efficiency = data['targetEfficiency']
             duration = data['duration']            
             status = 1
             effortVal = solutionInfo.effort_savings
@@ -738,7 +728,6 @@ def recommendation():
                 licsensing_cost=licsensing_cost,
                 frequency=frequency,
                 effort_savings=effortVal,
-                target_efficiency=target_efficiency,
                 program_category=program_category,
                 initial_effort=initial_effort,
                 duration=duration,
@@ -753,23 +742,4 @@ def recommendation():
             "code":200,
             'message':"Data updated successfully."
         },200 
-
-def get_final_saving(stlc_name):
-    result = Calculation.query.filter_by(
-            stlc_name = stlc_name,
-            status=1
-        ).first() 
-    return result.overr
-
-
-
-def get_sum_effort(stlc_name):
-     result = Cognitivesolutions.query.filter_by(
-            stlc_name = stlc_name,
-            status=1
-        )
-     sum=0
-     for res in result:
-         sum=sum+res.effort_savings
-     return sum
-
+   

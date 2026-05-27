@@ -80,9 +80,10 @@ def Login():
             }),200
         
         if user.email_confirmed == 1 and user.password == password:
+            # print("AAA")   
             token = create_access_token(identity ={'user':user.email,'role':user.user_role})
-            token = token.decode('utf-8') 
-            
+        # print("BBB")  
+        # print(token)   
         return jsonify({
             "success":True,
             "code":200,
@@ -97,9 +98,14 @@ def Login():
     except:
         return jsonify({
             "success":False,
-            "code":500,
-            "message":"System encountered an unexpected problem and is being tracked.",
-        }),500
+            "codee":404,
+            "message":"hI."
+        }),200 
+        # return jsonify({
+        #     "success":False,
+        #     "code":500,
+        #     "message":"System encountered an unexpected problem and is being tracked.",
+        # }),500
 
 #Activate Registerd User
 @app.route("/user/activate", methods=["POST"])

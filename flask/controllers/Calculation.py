@@ -46,7 +46,7 @@ def add_calculation():
     
     oldValue=0
     for x in allYearValueData:
-        # print(x)
+        print(x)
         if(x==""):
             return {
                 "success":False,
@@ -151,18 +151,10 @@ def add_calculation():
         stlc_val_name = data.stlc_name
         
         if (data.override_breakup != data.standard_breakup):
-            # print("PPP")
             podVal = float(data.override_breakup)
         else:
-            # print("RRR")
             podVal = float(data.standard_breakup)
-        # return {
-        #     "success":True,
-        #     "code":200,
-        #     "podVal":podVal,
-        #     "stlc_val_name":stlc_val_name,
-        #     'message':"Calculation Generated Successfully."
-        # },200
+        
         if podVal >0:  
             solQuery = Cognitivesolutions.query.filter_by(stlc_name = stlc_val_name,added_by=logged_user_email).all()
             catelog_name=''
@@ -176,7 +168,6 @@ def add_calculation():
                 max_value = 0
             oesVal = calculate_oes(stlc_val_name)
             overrVal = (podVal*oesVal)/100
-           
             poaVal = podVal - overrVal            
             podphVal = (initial_effort*podVal)/100
             poaphVal = (initial_effort*poaVal)/100

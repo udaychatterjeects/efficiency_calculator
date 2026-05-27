@@ -7,10 +7,9 @@ import dotenv
 dotenv.load_dotenv()
 
 AZURE_OPENAI_ENDPOINT = os.environ["AZURE_OPENAI_ENDPOINT"]
-AZURE_OPENAI_API_KEY = os.environ["AZURE_OPENAI_API_KEY"]
-AZURE_OPENAI_API_VERSION = os.environ["AZURE_OPENAI_API_VERSION"]
-AZURE_OPENAI_DEPLOYMENT= os.environ["AZURE_OPENAI_DEPLOYMENT"]
-OPENAI_MODEL = os.environ["OPENAI_MODEL"]
+AZURE_OPENAI_KEY = os.environ["AZURE_OPENAI_KEY"]
+AZURE_OPENAI_VERSION = os.environ["AZURE_OPENAI_VERSION"]
+
 
 
 def parse_solution_details(
@@ -47,37 +46,28 @@ def get_prompt(input_description: str, solution_data: dict[str, list[str]]) -> s
     return prompt
 
 
-def get_response(prompt: str, response_format =  None) -> str:
+def get_response(message: str) -> str:
     client = AzureOpenAI(
         azure_endpoint=AZURE_OPENAI_ENDPOINT,
-        azure_deployment=AZURE_OPENAI_DEPLOYMENT,
-        api_version=AZURE_OPENAI_API_VERSION,
-        api_key=AZURE_OPENAI_API_KEY,
+        api_key=AZURE_OPENAI_KEY,
+        api_version=AZURE_OPENAI_VERSION,
     )
     messages = [
         {
             "role": "system",
             "content": "You are an AI assistant designed to analyze and correlate descriptions of solutions.",
         },
-        {"role": "user", "content": prompt},
+        {"role": "user", "content": message},
     ]
     response = client.chat.completions.create(
+        model="FirstCheck",
         messages=messages,
-        model=OPENAI_MODEL,
-        # temperature=0,
-        # max_tokens=10000,
-        # top_p=0.95,
-        # frequency_penalty=0,
-        # presence_penalty=0,
-        # stop=None,
-        response_format=response_format,
-
-        temperature=0,
-        top_p=1,
+        temperature=0.5,
+        max_tokens=800,
+        top_p=0.95,
         frequency_penalty=0,
         presence_penalty=0,
-        max_tokens=10000,
-        stop=None
+        stop=None,
     )
     reply = response.choices[0].message.content
     return reply
